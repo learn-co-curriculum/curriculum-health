@@ -23,6 +23,17 @@
   color: #61dafb;
 }
 
+.trackContainer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-content: space-around;
+}
+
+.trackContainer * {
+  width: 300px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

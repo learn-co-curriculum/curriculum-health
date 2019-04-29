@@ -27,7 +27,7 @@ const RepositoryCard = (props) => {
     .replace(/(-|_)/g, ' ')
 
   return (
-    <div className="repoCard">
+    <div style={{background: props.private ?  "#00" : "#FFF"}} className="repoCard">
       <a className="title" href={props.url}><h4>{renderName(props.repoName)}</h4></a>
       <div className="repoTotals">
         <span><h2>{props.issueCount}</h2><div>Total Issues and PRs</div></span>

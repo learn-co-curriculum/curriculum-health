@@ -25,7 +25,6 @@ const timeConverter = (UNIX_timestamp) => {
   var date = a.getDate();
   var hour = a.getHours();
   var min = a.getMinutes();
-  var sec = a.getSeconds();
   var time = hour + ':' + min + ' on ' + month + ' ' + date + ', ' + year
   return time;
 }

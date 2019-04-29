@@ -8,13 +8,13 @@ const CommitEventCard = ({
 }) => {
 
   const mapCommits = () => payload.commits.map(commit => <li className="commitMessage" key={uuidv4()}>{commit.message}</li>)
-
+  const authorized = ['sgharms', 'maxwellbenton', 'jenmyers', 'drakeltheryuujin']
   const renderName = () => repo.name
     .replace('learn-co-curriculum/', '')
     .replace(/(-|_)/g, ' ')
 
   return (
-    <div className="eventCard">
+    <div style={{background: authorized.includes(actor.login) ?  "#FFF" : "#0FF"}}className="eventCard">
       <a className="repoLink" href={"https://github.com/"+repo.name}>
         <h4 className="title" >{renderName()}</h4>
       </a>

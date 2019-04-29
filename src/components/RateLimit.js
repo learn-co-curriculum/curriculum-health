@@ -1,12 +1,6 @@
-import React, {
-  useState,
-  useEffect
-} from 'react'
-import {
-  GitHubClient
-} from '../adapters/GitHubClient'
+import React from 'react'
 
-function timeConverter(UNIX_timestamp) {
+const timeConverter = (UNIX_timestamp) => {
   var a = new Date(UNIX_timestamp * 1000);
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var year = a.getFullYear();
@@ -19,43 +13,16 @@ function timeConverter(UNIX_timestamp) {
   return time;
 }
 
-const defaultData = {
-  remaining: null,
-  limit: null,
-  reset: null
-}
-
-function RateLimit(props) {
-
-  const [limitData, setLimitData] = useState(defaultData)
-
-  useEffect(() => {
-    if (limitData.remaining === null) {
-      let githubCliDotCom = new GitHubClient({
-        baseUri: "https://api.github.com",
-        token: process.env.REACT_APP_TOKEN_GITHUB_DOT_COM
-      });
-      githubCliDotCom.callGitHubAPI({
-          method: "GET",
-          path: "/rate_limit"
-        })
-        .then(obj => {
-          setLimitData(obj.data.rate);
-        })
-    }
-  })
-
-  function handleClick(event) {
-    event.stopPropagation()
-    setLimitData(defaultData)
-  }
+const RateLimit = ({
+  remaining,
+  limit,
+  reset
+}) => {
 
   return (
-    <div>
-      <div>You have {limitData.remaining} requests left out of {limitData.limit}</div>
-      <div>Your limit resets at {timeConverter(limitData.reset)}</div>
-      <button onClick={handleClick}>Refresh</button>
-    </div>
+    <span>
+      <small>You have {remaining} GitHub API requests remaining out of a {limit} limit. Your limit will reset at {timeConverter(reset)}</small>
+    </span>
   )
 }
 

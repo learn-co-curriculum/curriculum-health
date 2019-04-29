@@ -1,68 +1,95 @@
 import React, {
-  useState,
-  useEffect
+  useState
 } from 'react'
-
+import uuidv4 from 'uuid/v4'
 import RepositoryCard from './RepositoryCard'
-
-const defaultSortTypes = [
-  'standard',
-  'standardReverse',
-  'issue',
-  'issueReverse',
-  'commit',
-  'commitReverse'
-]
+import {
+  connect
+} from "react-redux";
+import {
+  getRepositories,
+  getAllAvaiableIDBKeys,
+  getAllAvaiableIDBData
+} from "../actions";
 
 const TrackContainer = ({
-  trackName,
-  url,
+  name,
+  productInOrder,
   repositories,
-  repoNameArray
+  uniqueRepoUpdateSet,
+  match
 }) => {
 
-  const [sortType, setSortType] = useState('issueReverse')
+  const [sortType, setSortType] = useState('standard')
 
-  const mapRepositories = () => {
-    const uniqueRepos = [...new Set(repoNameArray)];
-    if (Object.keys(repositories)
-      .length === uniqueRepos.length) {
-      if (sortType === 'standard') {
-        return repoNameArray.map(repo => <RepositoryCard key={repositories[repo].id} {...repositories[repo]}/>)
-      }
-
-      if (sortType === 'standardReverse') {
-        return repoNameArray.reverse()
-          .map(repo => <RepositoryCard key={repositories[repo].id} {...repositories[repo]}/>)
-      }
-
-      if (sortType === 'issue') {
-        return Object.keys(repositories)
-          .sort((rA, rB) => parseInt(repositories[rA].issueCount) - parseInt(repositories[rB].issueCount))
-          .map(repo => <RepositoryCard key={repositories[repo].id} {...repositories[repo]}/>)
-      }
-
-      if (sortType === 'issueReverse') {
-        return Object.keys(repositories)
-          .sort((rA, rB) => parseInt(repositories[rA].issueCount) - parseInt(repositories[rB].issueCount))
-          .reverse()
-          .map(repo => <RepositoryCard key={repositories[repo].id} {...repositories[repo]}/>)
-      }
-
-      return repoNameArray.map(repo => <RepositoryCard key={repositories[repo].id} {...repositories[repo]}/>)
-    } else {
-      return <div>Loading... </div>
+  const handleChange = event => {
+    setSortType(event.target.value)
+  }
+  const uniqueSet = [...new Set(productInOrder)]
+  const sortBy = () => {
+    if (sortType === 'standard') {
+      return uniqueSet
     }
 
+    if (sortType === 'standardReverse') {
+      return uniqueSet.reverse()
+    }
+
+    if (sortType === 'issue') {
+      return uniqueSet
+        .sort((rA, rB) => parseInt(repositories[rA].issueCount) - parseInt(repositories[rB].issueCount))
+    }
+
+    if (sortType === 'issueReverse') {
+      return uniqueSet
+        .sort((rA, rB) => parseInt(repositories[rA].issueCount) - parseInt(repositories[rB].issueCount))
+        .reverse()
+    }
+
+    if (sortType === 'commit') {
+      return uniqueSet
+        .sort((rA, rB) => parseInt(repositories[rA].lastCommit) - parseInt(repositories[rB].lastCommit))
+    }
+
+    if (sortType === 'commitReverse') {
+      return uniqueSet
+        .sort((rA, rB) => parseInt(repositories[rA].lastCommit) - parseInt(repositories[rB].lastCommit))
+        .reverse()
+    }
   }
 
+  const mapRepositories = () => sortBy()
+    .map(repo => {
+      repositories[repo].id = uuidv4()
+      return <RepositoryCard key={repositories[repo].id} {...repositories[repo]}/>
+    })
 
-  return (<div>
-    <h1><a href={url}>{trackName}</a></h1>
+  return (
     <div className="trackContainer">
-    {mapRepositories()}
+      <div className="trackNavigation">
+        <h2 className="title">{name}</h2>
+        <div>
+          <label>
+            <select value={sortType} onChange={handleChange}>
+              <option value="standard">Track Order</option>
+              <option value="standardReverse">Reverse Track Order</option>
+              <option value="issueReverse">Most Issues</option>
+              <option value="issue">Least Issues</option>
+              <option value="commit">Oldest Commits</option>
+              <option value="commitReverse">Newest Commits</option>
+            </select>
+          </label>
+      </div>
+      </div>
+      <div className="repoContainer">
+        {mapRepositories()}
+      </div>
     </div>
-    </div>)
+  )
 }
 
-export default TrackContainer
+export default connect(state => state, {
+  getRepositories,
+  getAllAvaiableIDBKeys,
+  getAllAvaiableIDBData
+})(TrackContainer);
